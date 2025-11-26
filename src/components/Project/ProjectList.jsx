@@ -33,7 +33,7 @@ const ProjectList = () => {
   const [showKanban, setShowKanban] = useState(false);
 
   // Filter states
-  const [statusFilter, setStatusFilter] = useState("ALL"); // main applied status filter
+const [statusFilter, setStatusFilter] = useState("DEFAULT");
   const [monthFilter, setMonthFilter] = useState(""); // applied month name (e.g. "January") or ""
   const [yearFilter, setYearFilter] = useState(""); // applied year number string or ""
 
@@ -181,8 +181,14 @@ const fetcher = async () => {
     const matchYear = yearFilter === "" || planYear === yearFilter;
 
     // final: must match search, status, month, year
-    const matchStatusFinal =
-      statusFilter === "ALL" || p.status === statusFilter;
+  const matchStatusFinal =
+    // Jika filter masih default, tampilkan TO_DO & IN_PROGRESS
+    statusFilter === "DEFAULT"
+      ? ["TO_DO", "IN_PROGRESS"].includes(p.status)
+      : statusFilter === "ALL"
+      ? true
+      : p.status === statusFilter;
+
 
     return matchSearch && matchStatusFinal && matchMonth && matchYear;
   });
@@ -454,16 +460,19 @@ const completed = filteredProjects.filter((p) => p.status === "COMPLETED").lengt
                 <div className="absolute left-0 mt-2 w-72 bg-white shadow-xl rounded-xl border border-gray-200 z-50 p-3">  
                   <div className="mb-2">
                     <label className="text-[0.65rem] block mb-1 text-gray-600">Status</label>
-                    <select
-                      value={tempStatus}
-                      onChange={(e) => setTempStatus(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-lg text-[0.65rem] focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    >
-                      <option value="ALL">All Status</option>
-                      <option value="TO_DO">To Do</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="COMPLETED">Completed</option>
-                    </select>
+        {/* Dropdown Status */}
+<select
+  value={tempStatus}
+  onChange={(e) => setTempStatus(e.target.value)}
+  className="w-full p-2 border border-gray-300 rounded-lg text-[0.65rem] focus:outline-none focus:ring-2 focus:ring-blue-400"
+>
+  <option value="DEFAULT">Choose Status</option> {/* Default placeholder */}
+  <option value="ALL">All Status</option>
+  <option value="TO_DO">To Do</option>
+  <option value="IN_PROGRESS">In Progress</option>
+  <option value="COMPLETED">Completed</option>
+</select>
+
                   </div>
 
                   <div className="mb-2 grid grid-cols-2 gap-2">
